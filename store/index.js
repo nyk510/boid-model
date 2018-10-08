@@ -3,7 +3,7 @@ export const state = () => ({
 })
 
 export const mutations = {
-  toggleSidebar (state) {
+  toggleSidebar(state) {
     state.sidebar = !state.sidebar
   }
 }
