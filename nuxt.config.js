@@ -22,41 +22,18 @@ export default {
   ** Customize the progress bar color
   */
   loading: { color: '#3B8070' },
+  extractCSS: true,
   /*
-  ** Build configuration
-  */
-  build: {
-    transpile: [/^vuetify/],
-    babel: {
-      plugins: [
-        ['transform-imports', {
-          'vuetify': {
-            'transform': 'vuetify/es5/components/${member}',
-            'preventFullImport': true
-          }
-        }]
-      ]
-    },
-    extractCSS: true,
-    /*
     ** Run ESLint on save
     */
-    extend (config, {isDev}) {
-      if (isDev && process.client) {
-        config.module.rules.push({
-          enforce: 'pre',
-          test: /\.(js|vue)$/,
-          loader: 'eslint-loader',
-          exclude: /(node_modules)/
-        })
-      }
-      if (process.server) {
-        config.externals = [
-          nodeExternals({
-            whitelist: [/^vuetify/]
-          })
-        ]
-      }
+  extend (config, {isDev}) {
+    if (isDev && process.client) {
+      config.module.rules.push({
+        enforce: 'pre',
+        test: /\.(js|vue)$/,
+        loader: 'eslint-loader',
+        exclude: /(node_modules)/
+      })
     }
   }
 }
