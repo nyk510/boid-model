@@ -3,14 +3,20 @@
     <v-jumbotron 
       color="primary" 
       dark>
-      <v-container>
-        <div class="pb-3">
-          <h2 class="display-1">Fish Boid Model</h2>
-          <span>群れのシュミレーション</span>
-        </div>
+      <v-container fill-height>
+        <v-layout 
+          column 
+          justify-center>
+          <div>
+            <h2 class="display-2">Fish Boid Model</h2>
+            <span>群れのシュミレーション</span>
+          </div>
+        </v-layout>
       </v-container>
     </v-jumbotron>
-    <v-container>
+    <v-container 
+      style="margin-top: -100px" 
+      class="pt-0">
       <boid-canvas/>
     </v-container>
   </div>
