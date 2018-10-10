@@ -5,10 +5,10 @@ import colors from 'vuetify/es5/util/colors'
 
 const themeColor = {
   primary: {
-    base: colors.blue.darken3,
-    darken1: colors.blue.darken4
+    base: colors.blueGrey.darken1,
+    darken1: colors.blueGrey.darken2
   },
-  secondary: colors.indigo
+  secondary: colors.blueGrey.lighten3
 }
 
 Vue.use(Vuetify, {
