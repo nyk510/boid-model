@@ -1,8 +1,6 @@
 <template>
   <v-app>
     <v-navigation-drawer
-      :mini-variant.sync="miniVariant"
-      :clipped="clipped"
       v-model="drawer"
       temporary
       fixed
@@ -36,9 +34,7 @@
       <v-toolbar-title v-text="title"/>
     </v-toolbar>
     <v-content>
-      <v-container>
-        <nuxt />
-      </v-container>
+      <nuxt />
     </v-content>
   </v-app>
 </template>
