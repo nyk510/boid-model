@@ -27,8 +27,7 @@
     <v-toolbar 
       fixed 
       app 
-      clipped-left 
-      flat 
+      clipped-left
       color="white">
       <v-toolbar-side-icon @click="drawer = !drawer"/>
       <v-toolbar-title v-text="title"/>
@@ -46,7 +45,8 @@ export default {
       drawer: true,
       items: [
         { icon: 'apps', title: 'Welcome', to: '/' },
-        { icon: 'bubble_chart', title: 'Inspire', to: '/inspire' }
+        { icon: 'info', title: 'About', to: '/about' },
+        { icon: 'apps', title: 'Fish Boid Model', to: '/boid' }
       ],
       title: 'NYK510'
     }

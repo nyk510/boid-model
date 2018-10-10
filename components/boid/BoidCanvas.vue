@@ -8,7 +8,9 @@
       
       <v-card>
         <v-toolbar card>
-          <v-btn @click="onClickAdd">Add</v-btn>
+          <v-btn 
+            class="hidden-xs-only"
+            @click="onClickAdd">Add</v-btn>
           <v-btn
             :disabled="isRunning" 
             color="primary"
@@ -62,7 +64,7 @@
         </v-toolbar>
         <div 
           ref="field"
-          style="height: 1000px">
+          style="height: 1000px; max-height: calc(100vh - 48px)">
           <svg 
             width="100%" 
             height="100%">
