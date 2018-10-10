@@ -6,13 +6,15 @@
       :cy="value.position.y"
       :r="radius"
       :style="strokeStyle"
-      class="primary--text"
+      class="boid-fish"
       style="fill: transparent; stroke-width: 1" />
     <circle
       :cx="value.position.x"
       :cy="value.position.y"
       :r="value.sakuteki"
-      style="fill: transparent; stroke: #eee"
+      :class="sakutekiClass"
+      class="boid-fish boid-fish__sakuteki"
+      style="fill: transparent"
       @click="onClick"/>
     <line
       :x1="value.position.x"
@@ -20,19 +22,24 @@
       :y1="value.position.y"
       :y2="value.position.y + value.verocity.y * 5"
       :style="strokeStyle"
+      class="boid-fish"
       style="stroke-width:2" />
 
-    <g v-if="active">
-      <line
-        v-for="i in history.length - 1"
-        :key="i"
-        :x1="history[i - 1].x"
-        :y1="history[i - 1].y"
-        :x2="history[i].x"
-        :y2="history[i].y"
-        :style="strokeStyle"
-        style="stroke-width: 2" />
-    </g>
+    <v-fade-transition>
+      <g v-if="showHistory">
+        <line
+          v-for="i in history.length - 1"
+          :key="i"
+          :x1="history[i - 1].x"
+          :y1="history[i - 1].y"
+          :x2="history[i].x"
+          :y2="history[i].y"
+          :style="strokeStyle"
+          class="boid-fish"
+          style="stroke-width: 2" />
+      </g>
+    </v-fade-transition>
+  
   </g>
 </template>
 
@@ -74,6 +81,13 @@ export default {
       }
       return retval
     },
+    sakutekiClass() {
+      if (this.disabled) return 'boid-fish__sakuteki--hidden'
+      if (this.active) return 'boid-fish__sakuteki--active'
+    },
+    showHistory() {
+      return this.active && this.history.length >= 2
+    },
     strokeStyle() {
       if (this.active) return `stroke: ${this.color}`
       if (this.disabled) return `stroke: ${this.disabledColor}`
@@ -87,3 +101,23 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.boid-fish {
+  transition: stroke 1s;
+}
+
+.boid-fish__sakuteki {
+  opacity: 0.8;
+  stroke: #eee;
+}
+
+.boid-fish__sakuteki--hidden {
+  opacity: 0.3;
+}
+
+.boid-fish__sakuteki--active {
+  opacity: 1;
+  stroke: #1565c0;
+}
+</style>

@@ -15,8 +15,9 @@
       </v-container>
     </v-jumbotron>
     <v-container 
-      style="margin-top: -100px" 
-      class="pt-0">
+      style="margin-top: -150px" 
+      class="pa-0"
+      grid-list-md>
       <boid-canvas/>
     </v-container>
   </div>
