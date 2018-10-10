@@ -5,10 +5,9 @@
       :cx="value.position.x"
       :cy="value.position.y"
       :r="radius"
-      :style="fishCircleStyle"
+      :style="strokeStyle"
       class="primary--text"
-      style="fill: transparent; stroke: blue"
-    />
+      style="fill: transparent; stroke-width: 1" />
     <circle
       :cx="value.position.x"
       :cy="value.position.y"
@@ -20,7 +19,8 @@
       :x2="value.position.x + value.verocity.x * 5"
       :y1="value.position.y"
       :y2="value.position.y + value.verocity.y * 5"
-      style="stroke: blue; stroke-width:2" />
+      :style="strokeStyle"
+      style="stroke-width:2" />
 
     <g v-if="active">
       <line
@@ -30,7 +30,8 @@
         :y1="history[i - 1].y"
         :x2="history[i].x"
         :y2="history[i].y"
-        style="stroke: blue; stroke-width:2" />
+        :style="strokeStyle"
+        style="stroke-width: 2" />
     </g>
   </g>
 </template>
@@ -49,31 +50,34 @@ export default {
     active: {
       type: Boolean,
       default: false
-    }
-  },
-  data() {
-    return {
-      history: null
+    },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+    color: {
+      type: String,
+      default: '#1565c0'
+    },
+    disabledColor: {
+      type: String,
+      default: '#f2f2f2'
     }
   },
   computed: {
-    fishCircleStyle() {
-      if (this.active) {
-        return 'stroke-width: 3'
+    history() {
+      if (!this.value || !this.value.history) return []
+      const allHistory = this.value.history.slice()
+      const retval = []
+      for (let i = 0; i < allHistory.length; i++) {
+        if (i % 20) retval.push(allHistory[i])
       }
-      return ''
-    }
-  },
-  watch: {
-    active(val) {
-      if (val) {
-        const allHistory = this.value.history.slice()
-        const retval = []
-        for (let i = 0; i < allHistory.length; i++) {
-          if (i % 20) retval.push(allHistory[i])
-        }
-        this.history = retval
-      }
+      return retval
+    },
+    strokeStyle() {
+      if (this.active) return `stroke: ${this.color}`
+      if (this.disabled) return `stroke: ${this.disabledColor}`
+      return `stroke: ${this.color}`
     }
   },
   methods: {

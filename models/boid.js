@@ -147,10 +147,10 @@ class Fish extends AbstractObject {
   static maxAccelerationNorm = 0.1
   static counter = 0
 
-  constructor(initPosition, sakuteki = 100) {
+  constructor(initPosition, sakuteki = 100, dislikeDistance = 20) {
     super(initPosition)
     this.sakuteki = sakuteki
-    this.dislikeDistance = 20
+    this.dislikeDistance = dislikeDistance
     Fish.counter += 1
     this.id = Fish.counter
   }
@@ -206,20 +206,31 @@ function filterByDistance(fishes, viewFrom, maxDistance) {
  * @class Field
  */
 export class Field {
-  constructor(width = 1000, height = 500, sakutekiRange = 200) {
+  constructor(
+    width = 1000,
+    height = 500,
+    sakutekiRange = 200,
+    dislikeDistance = 20
+  ) {
     this.width = width
     this.height = height
     this.fishes = []
     this.newFishes = []
     this.sakutekiRange = sakutekiRange
+    this.dislikeDistance = dislikeDistance
+    this.isUpdating = false
   }
 
   addFish() {
     const x = (this.width * (0.5 + Math.random())) / 2
     const y = (this.height * (0.5 + Math.random())) / 2
     const pos = new Coodinate(x, y)
-    const newFish = new Fish(pos)
+    const newFish = new Fish(pos, this.sakutekiRange, this.dislikeDistance)
     this.newFishes.push(newFish)
+
+    if (this.isUpdating) return
+    this.fishes = this.fishes.concat(this.newFishes)
+    this.newFishes = []
   }
 
   next() {
