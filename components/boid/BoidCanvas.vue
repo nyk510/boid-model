@@ -64,7 +64,7 @@
         </v-toolbar>
         <div 
           ref="field"
-          style="height: 1000px; max-height: calc(100vh - 48px)">
+          style="height: 500px; max-height: calc(100vh - 48px)">
           <svg 
             width="100%" 
             height="100%">
