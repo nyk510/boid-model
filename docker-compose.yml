@@ -1,0 +1,12 @@
+version: '2.3'
+services:
+  node-app:
+    image: 'node:8-alpine'
+    container_name: boid-model-app
+    ports:
+      - '${PORT}:3111'
+    working_dir: /www/apps
+    command: /bin/sh -c "yarn && yarn dev"
+    volumes:
+      - ./:/www/apps/
+    env_file: .env

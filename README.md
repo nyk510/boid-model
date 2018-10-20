@@ -1,22 +1,12 @@
-# portfolio
+# Boid Model
 
-> nyker goto portfolio site
+boid modeling!!
 
-## Build Setup
+## Quick Start
 
-``` bash
-# install dependencies
-$ npm install # Or yarn install
-
-# serve with hot reload at localhost:3000
-$ npm run dev
-
-# build for production and launch server
-$ npm run build
-$ npm start
-
-# generate static project
-$ npm run generate
+```bash
+cp project.env .env
+docker-compose up
 ```
 
-For detailed explanation on how things work, check out the [Nuxt.js](https://github.com/nuxt/nuxt.js) and [Vuetify.js](https://vuetifyjs.com/) documentation.
+access to [http://localhost:3333/boid](http://localhost:3333/boid)
