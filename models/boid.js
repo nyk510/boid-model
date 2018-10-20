@@ -1,5 +1,15 @@
 class Coodinate {
   /**
+   *Creates an instance of Coodinate.
+   * @param {Number} x
+   * @param {Number} y
+   * @memberof Coodinate
+   */
+  constructor(x, y) {
+    this.x = x
+    this.y = y
+  }
+  /**
    *
    *
    * @static
@@ -11,11 +21,27 @@ class Coodinate {
     const d = (a.x - b.x) ** 2 + (a.y - b.y) ** 2
     return d ** 0.5
   }
-
+  /**
+   * 座標をコピーします
+   *
+   * @static
+   * @param {Coodinate} a コピーする座標
+   * @returns
+   * @memberof Coodinate
+   */
   static copy(a) {
     return new Coodinate(a.x, a.y)
   }
 
+  /**
+   * 座標同士を引き算した結果を返します
+   *
+   * @static
+   * @param {Coodinate} a
+   * @param {Coodinate} b
+   * @returns
+   * @memberof Coodinate
+   */
   static minus(a, b) {
     const r = new Coodinate(a.x, a.y)
     r.minus(b)
@@ -23,7 +49,7 @@ class Coodinate {
   }
 
   /**
-   *
+   * 座標に数値を掛け算した座標を返します
    *
    * @static
    * @param {Coodinate} a
@@ -34,9 +60,9 @@ class Coodinate {
     const retval = new Coodinate(a.x * x, a.y * x)
     return retval
   }
-
   /**
-   *
+   * 座標の平均値を返します
+   * x, y それぞれについて平均が取られます
    *
    * @static
    * @param {[Coodinate]} list
@@ -62,15 +88,10 @@ class Coodinate {
     const norm = Coodinate.distance(x, new Coodinate(0, 0))
     return Coodinate.mult(x, 1 / norm)
   }
-  constructor(x, y) {
-    this.x = x
-    this.y = y
-  }
 
   distanceBetween(a) {
     return Coodinate.distance(this, a)
   }
-
   /**
    *
    *
@@ -110,6 +131,7 @@ class AbstractObject {
   /**
    *Creates an instance of AbstractObject.
    * @param {Coodinate} initPosition
+   * @param {Numbe} maxVerocity オブジェクトの最大速度
    * @memberof AbstractObject
    */
   constructor(initPosition, maxVerocity = 5) {
@@ -122,7 +144,7 @@ class AbstractObject {
   }
 
   /**
-   *
+   * 加速度を元に座標と速度を更新するメソッドです
    *
    * @param {Coodinate} newAcceleration
    * @memberof AbstractObject
@@ -143,10 +165,25 @@ class AbstractObject {
   }
 }
 
+/**
+ * 魚の boid model
+ *
+ * @class Fish
+ * @extends {AbstractObject}
+ */
 class Fish extends AbstractObject {
   static maxAccelerationNorm = 0.1
+  static meanForceRatio = 0.7
+  static dislikeForceRatio = 5.0
   static counter = 0
 
+  /**
+   * 魚のインスタンスを作成します
+   * @param {Coodinate} initPosition
+   * @param {number} [sakuteki=100] 魚が見える範囲です。この範囲内の魚に対して boid の3原則を適用します
+   * @param {number} [dislikeDistance=20] この範囲内の魚からは遠ざかる動きをします.
+   * @memberof Fish
+   */
   constructor(initPosition, sakuteki = 100, dislikeDistance = 20) {
     super(initPosition)
     this.sakuteki = sakuteki
@@ -155,19 +192,25 @@ class Fish extends AbstractObject {
     this.id = Fish.counter
   }
   /**
-   *
+   * 次のフレームでの自分の加速度(意志)を決定します
    *
    * @param {[Fish]} nearlyFishes
    * @memberof Fish
    */
   nextAcceleration(nearlyFishes) {
+    // 近くに魚が居ない時加速しません
     if (nearlyFishes.length === 0) return new Coodinate(0, 0)
+
     const vList = nearlyFishes.map(f => f.verocity)
     const vMean = Coodinate.mean(vList)
     const pMean = Coodinate.mean(nearlyFishes.map(f => f.position))
+
+    // 速度の平均値にどれぐらい合わせるかを計算 (法則2)
     const vDirection = Coodinate.minus(vMean, this.verocity)
       .norm()
-      .multBy(0.7)
+      .multBy(Fish.meanForceRatio)
+
+    // 中心に移動するちからのベクトルを計算 (法則3)
     const pDirection = Coodinate.minus(pMean, this.position).norm()
 
     let direction = pDirection.plus(vDirection)
@@ -183,9 +226,10 @@ class Fish extends AbstractObject {
       const tooNearMeanPos = Coodinate.mean(
         tooNearFishPositions.map(f => f.position)
       )
+      // 近すぎる魚からどのぐらい離れるかのベクトルを計算(法則1)
       const tooNearDirection = Coodinate.minus(tooNearMeanPos, this.position)
         .norm()
-        .multBy(5)
+        .multBy(Fish.dislikeForceRatio)
       direction.minus(tooNearDirection)
     }
 
@@ -193,6 +237,14 @@ class Fish extends AbstractObject {
   }
 }
 
+/**
+ * viewFrom から特定の距離離れた魚のみを返す関数
+ *
+ * @param {[AbstractObject]} fishes
+ * @param {Coodinate} viewFrom
+ * @param {number} maxDistance
+ * @returns
+ */
 function filterByDistance(fishes, viewFrom, maxDistance) {
   return fishes.filter(fish => {
     const d = Coodinate.distance(fish.position, viewFrom)
@@ -201,11 +253,19 @@ function filterByDistance(fishes, viewFrom, maxDistance) {
 }
 
 /**
- *
+ * 魚を泳がせるフィールドクラス
  *
  * @class Field
  */
 export class Field {
+  /**
+   *Creates an instance of Field.
+   * @param {number} [width=1000] フィールドの横幅
+   * @param {number} [height=500] フィールドの縦幅
+   * @param {number} [sakutekiRange=200] 新しく作る魚がどれぐらいの範囲を見れるか
+   * @param {number} [dislikeDistance=20] 新しく作る魚はこの範囲以下の魚から離れようとします。
+   * @memberof Field
+   */
   constructor(
     width = 1000,
     height = 500,
@@ -221,6 +281,11 @@ export class Field {
     this.isUpdating = false
   }
 
+  /**
+   *ランダムな位置に魚を追加します
+   *
+   * @memberof Field
+   */
   addFish() {
     const x = (this.width * (0.5 + Math.random())) / 2
     const y = (this.height * (0.5 + Math.random())) / 2
@@ -233,10 +298,16 @@ export class Field {
     this.newFishes = []
   }
 
+  /**
+   * フィールドの時間を一つ進めます
+   *
+   * @memberof Field
+   */
   next() {
     this.fishes = this.fishes.concat(this.newFishes.slice())
     this.newFishes = []
 
+    // 初めに魚全員の行動(加速度)を決定する
     const accelerations = this.fishes.map(fish => {
       const fishesCanView = filterByDistance(
         this.fishes.filter(f => f !== fish),
@@ -246,9 +317,11 @@ export class Field {
       return fish.nextAcceleration(fishesCanView)
     })
 
+    // 決めた行動（加速度）にしたがって更新
     this.fishes.forEach((fish, idx) => {
       const acc = accelerations[idx]
 
+      // フィールドから外に出ようとする魚に対しては強制的に元に戻るような加速度をつける
       if (fish.position.x > this.width) {
         acc.plus(new Coodinate(-1, 0))
       }
